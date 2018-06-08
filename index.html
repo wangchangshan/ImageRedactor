@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Image Redactor</title>
+
+    <style>
+        body {
+            margin: 0;
+            font: caption;
+            background: yellowgreen;
+            color: #333;
+        }
+
+        #page {
+            margin: 0 auto;
+        }
+
+        #content {
+            font-size: 12px;
+            min-height: 2000px;
+            margin: 20px auto 0 20px;
+            background: #fff;
+            position: relative;
+        }
+
+        #myImage {
+            z-index: -1;
+            -webkit-user-select: none;  /* Chrome all / Safari all /opera15+*/  
+            -moz-user-select: none;     /* Firefox all */  
+            -ms-user-select: none;      /* IE 10+ */  
+            user-select: none;  
+        }
+
+        .div-cover {
+            position: absolute;
+            left: 0;
+            top: 0;
+            visibility: visible;
+            z-index: 1000;
+            height: 470px;
+            width: 874px;
+            -webkit-user-select: none;  /* Chrome all / Safari all /opera15+*/  
+            -moz-user-select: none;     /* Firefox all */  
+            -ms-user-select: none;      /* IE 10+ */  
+            user-select: none;  
+            cursor: crosshair;
+            background-image: url(#);  /* IE 10  image 图层问题 */  
+        }
+
+        .redact-box {            
+            border: 2px red solid;
+            width: 0px;
+            height: 0px;
+            position: absolute;
+            opacity: 0.5;
+            cursor: move;
+        }
+
+        .ui-resizable-handle {
+            position: absolute;
+            font-size: 0.1px;
+            display: block;
+        }
+
+        .ui-resizable-e {
+            cursor: e-resize;
+            width: 7px;
+            right: -5px;
+            top: 0;
+            height: 100%;
+        }
+
+        .ui-icon {
+            width: 16px;
+            height: 16px;
+            background-image: url(image/ui-icons_222222_256x240.png);
+        }
+
+        .ui-resizable-s {
+            cursor: s-resize;
+            height: 7px;
+            width: 100%;
+            bottom: -5px;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="page">
+        <div id="div-button-group">
+            <input type="button" value="Redact" id="btnRedact">
+            <input type="button" value="Remove Redact" id="btnRemoveRect">            
+        </div>
+        <div>
+            <ul>
+                <li>图片缩放涂黑比例</li>
+                <li>边框区域resize</li>
+                <li>后台涂黑</li>
+                <li>database change</li>
+            </ul>
+        </div>
+        <div id="content">
+            <div id="action-area">
+                <div class="div-cover" id="divCover"></div>
+                <img id="myImage" src="image/test.png">
+                <!-- <div class="redact-box" style="top: 50px; left:60px; height:70px; width: 90px;"></div> -->
+                <!-- <div class="redact-box" style="top: 50px; left:60px; height:70px; width: 90px;">
+                    <div class="ui-resizable-handle ui-resizable-e"></div>
+                    <div class="ui-resizable-handle ui-resizable-s"></div>
+                    <div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 1001;"></div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="ImageRedactor.js"></script>
+<script>
+    ImageRedactorEvent.enableRedactor();
+    //ImageRedactorEvent.disableRedactor();   
+    ImageRedactorEvent.actionEventInit();
+</script>
+</html>
