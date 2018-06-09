@@ -213,7 +213,7 @@ var ImageRedactorEvent = function () {
         }
     }
 
-    function handleButtonsEvent() {
+    function handleButtonsEvent(event) {
         event = EventUtil.getEvent(event);
         var target = EventUtil.getTarget(event);
         switch (target.id) {
@@ -244,6 +244,7 @@ var ImageRedactorEvent = function () {
 
                 console.log(JSON.stringify(rectangles));
                 EventUtil.stopPropagation(event);
+                EventUtil.preventDefault(event);
                 break;
 
             case "btnRemoveRect":
@@ -255,6 +256,7 @@ var ImageRedactorEvent = function () {
                     }
                 });
                 EventUtil.stopPropagation(event);
+                EventUtil.preventDefault(event);
                 break;
         }
     }
