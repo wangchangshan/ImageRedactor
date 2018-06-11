@@ -106,6 +106,7 @@ var ImageRedactorEvent = function () {
             case "mousedown":
                 if (event.target.className != 'redact-box') {
                     //create rectangle
+                    console.log("mousedown: create rectangle")
                     RectangleUtil.rectWNX = event.pageX - PanelUtil.panelPageX;
                     RectangleUtil.rectWNY = event.pageY - PanelUtil.panelPageY;
                     var active_box = document.createElement("div");
@@ -120,6 +121,7 @@ var ImageRedactorEvent = function () {
                 }
                 else {
                     // moving rectangle
+                    console.log("mousedown: moving rectangle")
                     RectangleUtil.dragging = true;
                     if (document.getElementById("moving_box") !== null) {
                         document.getElementById("moving_box").removeAttribute("id");
@@ -136,20 +138,21 @@ var ImageRedactorEvent = function () {
             case "mousemove":
                 if (document.getElementById("active_box") !== null) {
                     //creating rectangle
+                    console.log("mousemove: creating rectangle")
                     var elBox = document.getElementById("active_box");
 
                     RectangleUtil.rectESX = event.pageX - PanelUtil.panelPageX;
                     RectangleUtil.rectESY = event.pageY - PanelUtil.panelPageY;
 
-                    //prevent the rectangle cross the image border
-                    RectangleUtil.rectESX = RectangleUtil.rectESX >= PanelUtil.panelWidth ? PanelUtil.panelWidth : RectangleUtil.rectESX;
-                    RectangleUtil.rectESY = RectangleUtil.rectESY >= PanelUtil.panelHeigth ? PanelUtil.panelHeigth : RectangleUtil.rectESY;
+                    //prevent the rectangle cross the image border（4 is two border width）
+                    RectangleUtil.rectESX = RectangleUtil.rectESX - 4 >= PanelUtil.panelWidth ? PanelUtil.panelWidth - 4 : RectangleUtil.rectESX;
+                    RectangleUtil.rectESY = RectangleUtil.rectESY - 4 >= PanelUtil.panelHeigth ? PanelUtil.panelHeigth - 4 : RectangleUtil.rectESY;
 
                     elBox.style.width = (RectangleUtil.rectESX - RectangleUtil.rectWNX) + "px";
                     elBox.style.height = (RectangleUtil.rectESY - RectangleUtil.rectWNY) + "px";
                 }
                 if (document.getElementById("moving_box") && RectangleUtil.dragging) {
-                    console.log("moving box");
+                    console.log("mousemove: moving rectangle")
                     RectangleUtil.isClick = false;
                     // moving rectangle
                     var elBoxMoving = document.getElementById("moving_box");
@@ -179,11 +182,12 @@ var ImageRedactorEvent = function () {
                 EventUtil.stopPropagation(event);
                 break;
 
-            case "mouseup":
+            case "mouseup":                
                 EventUtil.stopPropagation(event);
                 RectangleUtil.dragging = false;
                 if (document.getElementById("active_box") !== null) {
                     // finish create rectangle
+                    console.log("mouseup: finish create rectangle")
                     var elBox = document.getElementById("active_box");
                     elBox.style.zIndex = ++RectangleUtil.zIndex;
                     elBox.removeAttribute("id");
@@ -225,8 +229,9 @@ var ImageRedactorEvent = function () {
                     element.setAttribute("isselected",false);
                     element.setAttribute("isredacted",true);
                     element.style.backgroundColor = "black";
+                    element.style.borderColor = "black";
                     element.style.opacity = 1;
-                    element.style.border = 0;
+                    //element.style.border = 0;
 
                     var elX = element.style.left,
                         elY = element.style.top,
@@ -234,10 +239,10 @@ var ImageRedactorEvent = function () {
                         elHeight = element.style.height;
                     
                     var info = {
-                        "x": elX.substring(0, elX.length -2),
+                        "x": elX.substring(0, elX.length -2), 
                         "y": elY.substring(0, elY.length -2),
-                        "w": elWidth.substring(0, elWidth.length -2),
-                        "h": elHeight.substring(0, elHeight.length -2)
+                        "w": parseInt(elWidth.substring(0, elWidth.length -2)) + 2,//border width
+                        "h": parseInt(elHeight.substring(0, elHeight.length -2)) + 2
                     }
                     rectangles.push(info);
                 });
@@ -263,10 +268,10 @@ var ImageRedactorEvent = function () {
 
     return {
         enableRedactor: function () {
-            PanelUtilInit();
+            EventUtil.addHandler(window, "load", PanelUtilInit);//图片加载完成
             EventUtil.addHandler(document.getElementById(PanelUtil.panelID), "mousedown", handleRectEvent);
             EventUtil.addHandler(document, "mousemove", handleRectEvent);
-            EventUtil.addHandler(document.getElementById(PanelUtil.panelID), "mouseup", handleRectEvent);
+            EventUtil.addHandler(document, "mouseup", handleRectEvent);
         },
 
         disableRedactor: function () {
