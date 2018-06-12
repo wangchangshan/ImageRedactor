@@ -41,8 +41,6 @@
             top: 0;
             visibility: visible;
             z-index: 1000;
-            height: 470px;
-            width: 874px;
             -webkit-user-select: none;  /* Chrome all / Safari all /opera15+*/  
             -moz-user-select: none;     /* Firefox all */  
             -ms-user-select: none;      /* IE 10+ */  
@@ -66,12 +64,30 @@
             display: block;
         }
 
-        .ui-resizable-e {
+        .box-e-resizable {
             cursor: e-resize;
             width: 7px;
             right: -5px;
             top: 0;
             height: 100%;
+            /* border: 1px green solid; */
+        }
+
+        .box-s-resizable {
+            cursor: s-resize;
+            height: 7px;
+            width: 100%;
+            bottom: -5px;
+            left: 0;
+            /* border: 1px green solid; */
+        }
+
+        .box-es-resizable {
+            cursor: se-resize;
+            width: 12px;
+            height: 12px;
+            right: 1px;
+            bottom: 1px;
         }
 
         .ui-icon {
@@ -80,13 +96,10 @@
             background-image: url(image/ui-icons_222222_256x240.png);
         }
 
-        .ui-resizable-s {
-            cursor: s-resize;
-            height: 7px;
-            width: 100%;
-            bottom: -5px;
-            left: 0;
+        .ui-icon-gripsmall-diagonal-se {
+            background-position: -64px -224px;
         }
+
     </style>
 </head>
 
@@ -109,10 +122,10 @@
                 <div class="div-cover" id="divCover"></div>
                 <img id="myImage" src="image/test.png">
                 <!-- <div class="redact-box" style="top: 50px; left:60px; height:70px; width: 90px;"></div> -->
-                <!-- <div class="redact-box" style="top: 50px; left:60px; height:70px; width: 90px;">
-                    <div class="ui-resizable-handle ui-resizable-e"></div>
-                    <div class="ui-resizable-handle ui-resizable-s"></div>
-                    <div class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se" style="z-index: 1001;"></div>
+                <!-- <div class="redact-box" style="top: 50px; left:60px; height:70px; width: 90px;z-index:2000">
+                    <div class="ui-resizable-handle box-e-resizable"></div>
+                    <div class="ui-resizable-handle box-s-resizable"></div>
+                    <div class="ui-resizable-handle box-es-resizable ui-icon ui-icon-gripsmall-diagonal-se"></div>
                 </div> -->
             </div>
         </div>

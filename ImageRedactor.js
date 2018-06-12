@@ -75,11 +75,14 @@ var RectangleUtil = {
     rectWNY: 0,
     rectESX: 0,
     rectESY: 0,
+    rectWidth: 0,
+    rectHeight: 0,
     mouseDiffX: 0,
     mouseDiffY: 0,
-    dragging: false,
     zIndex: 2000,
-    isClick: true
+    isClick: true,
+    dragging: false,
+    innerHtml:'<div class="ui-resizable-handle box-e-resizable"></div><div class="ui-resizable-handle box-s-resizable"></div><div class="ui-resizable-handle box-es-resizable ui-icon ui-icon-gripsmall-diagonal-se"></div>'
 };
 
 var PanelUtil = {
@@ -90,11 +93,19 @@ var PanelUtil = {
     panelHeigth: 0
 };
 
+var MousePosition = {
+    startPageX: 0,
+    startPageY: 0
+}
+
 function PanelUtilInit() {
     PanelUtil.panelPageX = EventUtil.getElementPageX(document.getElementById(PanelUtil.panelID));
     PanelUtil.panelPageY = EventUtil.getElementPageY(document.getElementById(PanelUtil.panelID));
     PanelUtil.panelWidth = document.getElementById("myImage").offsetWidth;
     PanelUtil.panelHeigth = document.getElementById("myImage").offsetHeight;
+
+    document.getElementById("divCover").style.width = PanelUtil.panelWidth + "px";
+    document.getElementById("divCover").style.height = PanelUtil.panelHeigth + "px";
 }
 
 var ImageRedactorEvent = function () {
@@ -104,7 +115,35 @@ var ImageRedactorEvent = function () {
 
         switch (event.type) {
             case "mousedown":
-                if (event.target.className != 'redact-box') {
+                var targetClassName = target.className;
+                if(targetClassName.indexOf('box-e-resizable') > -1){
+                    console.log('box-e-resizable');
+                    var eBox = target.parentNode;
+                    eBox.id = "e_resize_box";
+                    RectangleUtil.rectESX = parseInt(eBox.style.left.replace('px','')) + eBox.offsetWidth;
+                    RectangleUtil.rectWidth = eBox.offsetWidth;
+                    MousePosition.startPageX = event.pageX;
+                }
+                else if(targetClassName.indexOf('box-s-resizable') > -1){
+                    console.log('box-s-resizable');
+                    var sBox = target.parentNode;
+                    sBox.id = "s_resize_box";
+                    RectangleUtil.rectESY = parseInt(sBox.style.top.replace('px','')) + sBox.offsetHeight;
+                    RectangleUtil.rectHeight = sBox.offsetHeight;
+                    MousePosition.startPageY = event.pageY;
+                }
+                else if(targetClassName.indexOf('box-es-resizable') > -1){
+                    console.log('box-es-resizable');
+                    var esBox = target.parentNode;
+                    esBox.id = "es_resize_box";
+                    RectangleUtil.rectESX = parseInt(esBox.style.left.replace('px','')) + esBox.offsetWidth;
+                    RectangleUtil.rectESY = parseInt(esBox.style.top.replace('px','')) + esBox.offsetHeight;
+                    RectangleUtil.rectWidth = esBox.offsetWidth;
+                    RectangleUtil.rectHeight = esBox.offsetHeight;
+                    MousePosition.startPageX = event.pageX;
+                    MousePosition.startPageY = event.pageY;
+                }
+                else if (targetClassName != 'redact-box') {
                     //create rectangle
                     console.log("mousedown: create rectangle")
                     RectangleUtil.rectWNX = event.pageX - PanelUtil.panelPageX;
@@ -116,6 +155,7 @@ var ImageRedactorEvent = function () {
                     active_box.setAttribute("isselected", false);
                     active_box.style.left = RectangleUtil.rectWNX + 'px';
                     active_box.style.top = RectangleUtil.rectWNY + 'px';
+                    active_box.innerHTML = RectangleUtil.innerHtml;
                     document.getElementById(PanelUtil.panelID).appendChild(active_box);
                     active_box = null;
                 }
@@ -127,16 +167,67 @@ var ImageRedactorEvent = function () {
                         document.getElementById("moving_box").removeAttribute("id");
                     }
 
-                    event.target.id = "moving_box";
-                    RectangleUtil.mouseDiffX = event.pageX - EventUtil.getElementPageX(event.target);
-                    RectangleUtil.mouseDiffY = event.pageY - EventUtil.getElementPageY(event.target);
+                    target.id = "moving_box";
+                    RectangleUtil.mouseDiffX = event.pageX - EventUtil.getElementPageX(target);
+                    RectangleUtil.mouseDiffY = event.pageY - EventUtil.getElementPageY(target);
                 }                
                 RectangleUtil.isClick = true;
                 EventUtil.stopPropagation(event);
                 break;
 
             case "mousemove":
-                if (document.getElementById("active_box") !== null) {
+                if(document.getElementById("e_resize_box") !== null){
+                    RectangleUtil.isClick = false;
+                    var eResizeBox = document.getElementById("e_resize_box");
+                    var xDistance = event.pageX - MousePosition.startPageX;                    
+                    
+                    //east border 
+                    if (RectangleUtil.rectESX + xDistance >= PanelUtil.panelWidth) {
+                        //console.log("RectangleUtil.rectESX: "+ RectangleUtil.rectESX+" PanelUtil.panelWidth："+ PanelUtil.panelWidth)
+                        eResizeBox.style.width = PanelUtil.panelWidth - RectangleUtil.rectESX + RectangleUtil.rectWidth - 4 + "px";
+                    }
+                    else{
+                        eResizeBox.style.width = RectangleUtil.rectWidth + xDistance + "px";
+                    }
+                }
+                else if(document.getElementById("s_resize_box") !== null){
+                    RectangleUtil.isClick = false;
+                    var sResizeBox = document.getElementById("s_resize_box");
+                    var yDistance = event.pageY - MousePosition.startPageY;                                       
+                    
+                    //south border 
+                    if (RectangleUtil.rectESY + yDistance >= PanelUtil.panelHeigth) {
+                        sResizeBox.style.height = PanelUtil.panelHeigth - RectangleUtil.rectESY + RectangleUtil.rectHeight - 4 + "px";
+                    }
+                    else{
+                        sResizeBox.style.height = RectangleUtil.rectHeight + yDistance + "px";
+                    }
+                }
+                else if(document.getElementById("es_resize_box") !== null){
+                    console.log("resizing es_resize_box")
+                    RectangleUtil.isClick = false;
+                    var esResizeBox = document.getElementById("es_resize_box");
+                    var xDistance = event.pageX - MousePosition.startPageX;    
+                    var yDistance = event.pageY - MousePosition.startPageY;                                       
+                    
+                    //east border 
+                    if (RectangleUtil.rectESX + xDistance >= PanelUtil.panelWidth) {
+                        //console.log("RectangleUtil.rectESX: "+ RectangleUtil.rectESX+" PanelUtil.panelWidth："+ PanelUtil.panelWidth)
+                        esResizeBox.style.width = PanelUtil.panelWidth - RectangleUtil.rectESX + RectangleUtil.rectWidth - 4 + "px";
+                    }
+                    else{
+                        esResizeBox.style.width = RectangleUtil.rectWidth + xDistance + "px";
+                    }
+
+                    //south border 
+                    if (RectangleUtil.rectESY + yDistance >= PanelUtil.panelHeigth) {
+                        esResizeBox.style.height = PanelUtil.panelHeigth - RectangleUtil.rectESY + RectangleUtil.rectHeight - 4 + "px";
+                    }
+                    else{
+                        esResizeBox.style.height = RectangleUtil.rectHeight + yDistance + "px";
+                    }
+                }
+                else if (document.getElementById("active_box") !== null) {
                     //creating rectangle
                     console.log("mousemove: creating rectangle")
                     var elBox = document.getElementById("active_box");
@@ -151,7 +242,7 @@ var ImageRedactorEvent = function () {
                     elBox.style.width = (RectangleUtil.rectESX - RectangleUtil.rectWNX) + "px";
                     elBox.style.height = (RectangleUtil.rectESY - RectangleUtil.rectWNY) + "px";
                 }
-                if (document.getElementById("moving_box") && RectangleUtil.dragging) {
+                else if (document.getElementById("moving_box") && RectangleUtil.dragging) {
                     console.log("mousemove: moving rectangle")
                     RectangleUtil.isClick = false;
                     // moving rectangle
@@ -212,6 +303,15 @@ var ImageRedactorEvent = function () {
 
                 if (document.getElementById("moving_box") !== null) {
                     document.getElementById("moving_box").removeAttribute("id");
+                }
+                if (document.getElementById("e_resize_box") !== null) {
+                    document.getElementById("e_resize_box").removeAttribute("id");
+                }
+                if (document.getElementById("s_resize_box") !== null) {
+                    document.getElementById("s_resize_box").removeAttribute("id");
+                }
+                if (document.getElementById("es_resize_box") !== null) {
+                    document.getElementById("es_resize_box").removeAttribute("id");
                 }
                 break;
         }
@@ -282,6 +382,13 @@ var ImageRedactorEvent = function () {
 
         actionEventInit: function () {
             EventUtil.addHandler(document.getElementById("div-button-group"), "click", handleButtonsEvent);
+
+            EventUtil.addHandler(document, "keyup", function(event){ 
+                event = EventUtil.getEvent(event); 
+                if(event.keyCode === 46){
+                    document.getElementById("btnRemoveRect").click();
+                }
+            });
         }
     }
 }();
