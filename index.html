@@ -11,28 +11,30 @@
         body {
             margin: 0;
             font: caption;
-            background: yellowgreen;
+            background: #efefef;
             color: #333;
         }
 
-        #page {
-            margin: 0 auto;
+        .div-img-redactor {
+            margin: 20px;
         }
 
-        #content {
+        .div-img-redactor-content {
+            margin: 10px auto 10px 10px;
             font-size: 12px;
-            min-height: 2000px;
-            margin: 20px auto 0 20px;
-            background: #fff;
+            background: #efefef;
             position: relative;
         }
 
         #myImage {
             z-index: -1;
-            -webkit-user-select: none;  /* Chrome all / Safari all /opera15+*/  
-            -moz-user-select: none;     /* Firefox all */  
-            -ms-user-select: none;      /* IE 10+ */  
-            user-select: none;  
+            -webkit-user-select: none;
+            /* Chrome all / Safari all /opera15+*/
+            -moz-user-select: none;
+            /* Firefox all */
+            -ms-user-select: none;
+            /* IE 10+ */
+            user-select: none;
         }
 
         .div-cover {
@@ -41,20 +43,32 @@
             top: 0;
             visibility: visible;
             z-index: 1000;
-            -webkit-user-select: none;  /* Chrome all / Safari all /opera15+*/  
-            -moz-user-select: none;     /* Firefox all */  
-            -ms-user-select: none;      /* IE 10+ */  
-            user-select: none;  
-            background-image: url(#);  /* IE 10  image 图层问题 */  
+            -webkit-user-select: none;
+            /* Chrome all / Safari all /opera15+*/
+            -moz-user-select: none;
+            /* Firefox all */
+            -ms-user-select: none;
+            /* IE 10+ */
+            user-select: none;
+            background-image: url(#);
+            /* IE 10  image 图层问题 */
         }
 
-        .redact-box {            
+        .redact-box {
             border: 2px red solid;
             width: 0px;
             height: 0px;
             position: absolute;
             opacity: 0.5;
-            cursor: move;            
+            cursor: move;
+            -webkit-user-select: none;
+            /* Chrome all / Safari all /opera15+*/
+            -moz-user-select: none;
+            /* Firefox all */
+            -ms-user-select: none;
+            /* IE 10+ */
+            user-select: none;
+            /* 修复 IE下 拖动时容易产生因选中而发生的闪烁问题 */
         }
 
         .ui-resizable-handle {
@@ -99,40 +113,64 @@
             background-position: -64px -224px;
         }
 
+        /*Button*/
+
+        .button {
+            font-family: 'Lato';
+            background-color: #1B98DB;
+            color: #fff;
+            height: 28px;
+            padding-right: 12px;
+            padding-left: 12px;
+            margin-left: 10px;
+            margin-right: 0px;
+            font-size: 14px;
+            min-width: 90px;
+            *min-width: auto;
+            cursor: pointer;
+            border:0;
+            font-size: 12px;
+        }
+
+        .button:hover {
+            background-color: #76C1E9;
+        }
+
+        .button:disabled {
+            background-color: #666;
+            color: #ccc;
+            opacity: 0.3;
+            cursor: default;
+        }
+
+        .button[disabled] {
+            background-color: #666 !important;
+            color: #ccc !important;
+            opacity: 0.3;
+            cursor: default;
+        }
     </style>
 </head>
 
 <body>
-    <div id="page">
+    <div class="div-img-redactor">
         <div id="div-button-group">
-            <input type="button" value="Enable Draw" id="btnAddRectangle" style="width:100px">
-            <input type="button" value="Redact" id="btnRedact" style="width:100px">
-            <input type="button" value="Remove Redact" id="btnRemoveRect" style="width: 120px">
+            <input class="button" type="button" value="Enable Draw" id="btnAddRectangle">
+            <input class="button" type="button" value="Redact" id="btnRedact">
+            <input class="button" type="button" value="Remove Redact" id="btnRemoveRect">
         </div>
-        <div>
-            <ul>
-                <li>图片缩放涂黑比例</li>
-                <li>边框区域resize</li>
-                <li>后台涂黑</li>
-                <li>database change</li>
-            </ul>
-        </div>
-        <div id="content">
+        <div class="div-img-redactor-content">
             <div id="action-area">
                 <div class="div-cover" id="divCover"></div>
                 <img id="myImage" src="image/test.png">
-                <!-- <div class="redact-box" style="top: 50px; left:60px; height:70px; width: 90px;"></div> -->
-                <!-- <div class="redact-box" style="top: 50px; left:60px; height:70px; width: 90px;z-index:2000">
-                    <div class="ui-resizable-handle box-e-resizable"></div>
-                    <div class="ui-resizable-handle box-s-resizable"></div>
-                    <div class="ui-resizable-handle box-es-resizable ui-icon ui-icon-gripsmall-diagonal-se"></div>
-                </div> -->
             </div>
         </div>
     </div>
+    <input type="hidden" id="hidImageOriWith" name="hidImageOriWith" value="0" />
 </body>
 <script type="text/javascript" src="ImageRedactor.js"></script>
 <script>
     ImageRedactorEvent.actionEventInit();
 </script>
+
 </html>

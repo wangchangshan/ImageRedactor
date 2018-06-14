@@ -1,38 +1,38 @@
-var EventUtil = {    
-    addHandler: function(element, type, handler){
-        if(element.addEventListener){ // 是否存在DOM2级方法
+var EventUtil = {
+    addHandler: function (element, type, handler) {
+        if (element.addEventListener) { // 是否存在DOM2级方法
             element.addEventListener(type, handler, false);
         }
-        else if(element.attachEvent){ // IE8 及以下的方法
+        else if (element.attachEvent) { // IE8 及以下的方法
             element.attachEvent("on" + type, handler); //此处没有考虑作用域问题
         }
-        else{ // DOM0级方法， 现代浏览器应该不会执行到这里
+        else { // DOM0级方法， 现代浏览器应该不会执行到这里
             element["on" + type] = handler;
         }
     },
 
-    removeHandler: function(element, type, handler){
-        if (element.removeEventListener){ 
-            element.removeEventListener(type, handler, false); 
-        } 
-        else if (element.detachEvent){ 
-            element.detachEvent("on" + type, handler); 
-        } 
-        else { 
-            element["on" + type] = null; 
+    removeHandler: function (element, type, handler) {
+        if (element.removeEventListener) {
+            element.removeEventListener(type, handler, false);
+        }
+        else if (element.detachEvent) {
+            element.detachEvent("on" + type, handler);
+        }
+        else {
+            element["on" + type] = null;
         }
     },
 
-    getEvent: function(event){
+    getEvent: function (event) {
         return event ? event : window.event;
     },
 
-    getTarget: function(event){
+    getTarget: function (event) {
         return event.target || event.srcElement;
     },
 
-    preventDefault: function(event){
-        if(event.preventDefault){
+    preventDefault: function (event) {
+        if (event.preventDefault) {
             event.preventDefault();
         }
         else {
@@ -40,16 +40,16 @@ var EventUtil = {
         }
     },
 
-    stopPropagation: function(event){
-        if(event.stopPropagation){
+    stopPropagation: function (event) {
+        if (event.stopPropagation) {
             event.stopPropagation();
         }
-        else{
+        else {
             event.cancelBubble = true;
         }
     },
 
-    getElementPageX: function(element){
+    getElementPageX: function (element) {
         var pageX = element.offsetLeft;
         var elParent = element.offsetParent;
         while (elParent != null) {
@@ -59,7 +59,7 @@ var EventUtil = {
         return pageX;
     },
 
-    getElementPageY: function(element){
+    getElementPageY: function (element) {
         var pageY = element.offsetTop;
         var elParent = element.offsetParent;
         while (elParent != null) {
@@ -82,7 +82,7 @@ var RectangleUtil = {
     zIndex: 2000,
     isClick: true,
     dragging: false,
-    innerHtml:'<div class="ui-resizable-handle box-e-resizable"></div><div class="ui-resizable-handle box-s-resizable"></div><div class="ui-resizable-handle box-es-resizable ui-icon ui-icon-gripsmall-diagonal-se"></div>'
+    innerHtml: '<div class="ui-resizable-handle box-e-resizable"></div><div class="ui-resizable-handle box-s-resizable"></div><div class="ui-resizable-handle box-es-resizable ui-icon ui-icon-gripsmall-diagonal-se"></div>'
 };
 
 var PanelUtil = {
@@ -91,6 +91,7 @@ var PanelUtil = {
     panelPageY: 0,
     panelWidth: 0,
     panelHeigth: 0,
+    ratio: 0,
     allowDraw: false
 };
 
@@ -106,6 +107,13 @@ function PanelUtilInit() {
     // PanelUtil.panelHeigth = document.getElementById("myImage").offsetHeight;
     PanelUtil.panelWidth = document.getElementById("myImage").getBoundingClientRect().width; //精确到小数
     PanelUtil.panelHeigth = document.getElementById("myImage").getBoundingClientRect().height;
+    var imageOriWidth = document.getElementById("hidImageOriWith").value;
+    if (imageOriWidth != 0 && imageOriWidth != "") {
+        PanelUtil.ratio = (PanelUtil.panelWidth / parseFloat(imageOriWidth)) || 1;
+    }
+    else {
+        PanelUtil.ratio = 1;
+    }
 
     document.getElementById("divCover").style.width = PanelUtil.panelWidth + "px";
     document.getElementById("divCover").style.height = PanelUtil.panelHeigth + "px";
@@ -120,28 +128,28 @@ var ImageRedactorEvent = function () {
         switch (event.type) {
             case "mousedown":
                 var targetClassName = target.className;
-                if(targetClassName.indexOf('box-e-resizable') > -1){
+                if (targetClassName.indexOf('box-e-resizable') > -1) {
                     console.log('box-e-resizable');
                     var eBox = target.parentNode;
                     eBox.id = "e_resize_box";
-                    RectangleUtil.rectESX = parseInt(eBox.style.left.replace('px','')) + eBox.offsetWidth;
+                    RectangleUtil.rectESX = parseInt(eBox.style.left.replace('px', '')) + eBox.offsetWidth;
                     RectangleUtil.rectWidth = eBox.offsetWidth;
                     MousePosition.startPageX = event.pageX;
                 }
-                else if(targetClassName.indexOf('box-s-resizable') > -1){
+                else if (targetClassName.indexOf('box-s-resizable') > -1) {
                     console.log('box-s-resizable');
                     var sBox = target.parentNode;
                     sBox.id = "s_resize_box";
-                    RectangleUtil.rectESY = parseInt(sBox.style.top.replace('px','')) + sBox.offsetHeight;
+                    RectangleUtil.rectESY = parseInt(sBox.style.top.replace('px', '')) + sBox.offsetHeight;
                     RectangleUtil.rectHeight = sBox.offsetHeight;
                     MousePosition.startPageY = event.pageY;
                 }
-                else if(targetClassName.indexOf('box-es-resizable') > -1){
+                else if (targetClassName.indexOf('box-es-resizable') > -1) {
                     console.log('box-es-resizable');
                     var esBox = target.parentNode;
                     esBox.id = "es_resize_box";
-                    RectangleUtil.rectESX = parseInt(esBox.style.left.replace('px','')) + esBox.offsetWidth;
-                    RectangleUtil.rectESY = parseInt(esBox.style.top.replace('px','')) + esBox.offsetHeight;
+                    RectangleUtil.rectESX = parseInt(esBox.style.left.replace('px', '')) + esBox.offsetWidth;
+                    RectangleUtil.rectESY = parseInt(esBox.style.top.replace('px', '')) + esBox.offsetHeight;
                     RectangleUtil.rectWidth = esBox.offsetWidth;
                     RectangleUtil.rectHeight = esBox.offsetHeight;
                     MousePosition.startPageX = event.pageX;
@@ -150,12 +158,12 @@ var ImageRedactorEvent = function () {
                 else if (targetClassName != 'redact-box') {
                     //create rectangle
                     RectangleUtil.rectWNX = event.pageX - PanelUtil.panelPageX;
-                    RectangleUtil.rectWNY = event.pageY - PanelUtil.panelPageY;                    
-                    console.log("mousedown: create rectangle. RectangleUtil.rectWNX ："+  RectangleUtil.rectWNX + "RectangleUtil.rectWNY ："+ RectangleUtil.rectWNY)
+                    RectangleUtil.rectWNY = event.pageY - PanelUtil.panelPageY;
+                    console.log("mousedown: create rectangle. RectangleUtil.rectWNX ：" + RectangleUtil.rectWNX + "RectangleUtil.rectWNY ：" + RectangleUtil.rectWNY)
                     var active_box = document.createElement("div");
                     active_box.id = "active_box";
                     active_box.className = "redact-box";
-                    active_box.setAttribute("react_id", "rect_" + Math.random().toString().replace('.',''));
+                    active_box.setAttribute("react_id", "rect_" + Math.random().toString().replace('.', ''));
                     active_box.setAttribute("isselected", false);
                     active_box.style.left = RectangleUtil.rectWNX + 'px';
                     active_box.style.top = RectangleUtil.rectWNY + 'px';
@@ -174,52 +182,52 @@ var ImageRedactorEvent = function () {
                     target.id = "moving_box";
                     RectangleUtil.mouseDiffX = event.pageX - EventUtil.getElementPageX(target);
                     RectangleUtil.mouseDiffY = event.pageY - EventUtil.getElementPageY(target);
-                }                
+                }
                 RectangleUtil.isClick = true;
                 EventUtil.stopPropagation(event);
                 break;
 
             case "mousemove":
-                if(document.getElementById("e_resize_box") !== null){
+                if (document.getElementById("e_resize_box") !== null) {
                     RectangleUtil.isClick = false;
                     var eResizeBox = document.getElementById("e_resize_box");
-                    var xDistance = event.pageX - MousePosition.startPageX;                    
-                    
+                    var xDistance = event.pageX - MousePosition.startPageX;
+
                     //east border 
                     if (RectangleUtil.rectESX + xDistance >= PanelUtil.panelWidth) {
                         //console.log("RectangleUtil.rectESX: "+ RectangleUtil.rectESX+" PanelUtil.panelWidth："+ PanelUtil.panelWidth)
                         eResizeBox.style.width = PanelUtil.panelWidth - RectangleUtil.rectESX + RectangleUtil.rectWidth - 4 + "px";
                     }
-                    else{
+                    else {
                         eResizeBox.style.width = RectangleUtil.rectWidth + xDistance + "px";
                     }
                 }
-                else if(document.getElementById("s_resize_box") !== null){
+                else if (document.getElementById("s_resize_box") !== null) {
                     RectangleUtil.isClick = false;
                     var sResizeBox = document.getElementById("s_resize_box");
-                    var yDistance = event.pageY - MousePosition.startPageY;                                       
-                    
+                    var yDistance = event.pageY - MousePosition.startPageY;
+
                     //south border 
                     if (RectangleUtil.rectESY + yDistance >= PanelUtil.panelHeigth) {
                         sResizeBox.style.height = PanelUtil.panelHeigth - RectangleUtil.rectESY + RectangleUtil.rectHeight - 4 + "px";
                     }
-                    else{
+                    else {
                         sResizeBox.style.height = RectangleUtil.rectHeight + yDistance + "px";
                     }
                 }
-                else if(document.getElementById("es_resize_box") !== null){
+                else if (document.getElementById("es_resize_box") !== null) {
                     console.log("resizing es_resize_box")
                     RectangleUtil.isClick = false;
                     var esResizeBox = document.getElementById("es_resize_box");
-                    var xDistance = event.pageX - MousePosition.startPageX;    
-                    var yDistance = event.pageY - MousePosition.startPageY;                                       
-                    
+                    var xDistance = event.pageX - MousePosition.startPageX;
+                    var yDistance = event.pageY - MousePosition.startPageY;
+
                     //east border 
                     if (RectangleUtil.rectESX + xDistance >= PanelUtil.panelWidth) {
                         //console.log("RectangleUtil.rectESX: "+ RectangleUtil.rectESX+" PanelUtil.panelWidth："+ PanelUtil.panelWidth)
                         esResizeBox.style.width = PanelUtil.panelWidth - RectangleUtil.rectESX + RectangleUtil.rectWidth - 4 + "px";
                     }
-                    else{
+                    else {
                         esResizeBox.style.width = RectangleUtil.rectWidth + xDistance + "px";
                     }
 
@@ -227,7 +235,7 @@ var ImageRedactorEvent = function () {
                     if (RectangleUtil.rectESY + yDistance >= PanelUtil.panelHeigth) {
                         esResizeBox.style.height = PanelUtil.panelHeigth - RectangleUtil.rectESY + RectangleUtil.rectHeight - 4 + "px";
                     }
-                    else{
+                    else {
                         esResizeBox.style.height = RectangleUtil.rectHeight + yDistance + "px";
                     }
                 }
@@ -277,7 +285,7 @@ var ImageRedactorEvent = function () {
                 EventUtil.stopPropagation(event);
                 break;
 
-            case "mouseup":                
+            case "mouseup":
                 EventUtil.stopPropagation(event);
                 RectangleUtil.dragging = false;
                 if (document.getElementById("active_box") !== null) {
@@ -289,16 +297,16 @@ var ImageRedactorEvent = function () {
                     if (elBox.offsetWidth < 8 || elBox.offsetHeight < 8) {
                         document.getElementById(PanelUtil.panelID).removeChild(elBox);
                     }
-                    else{
-                        EventUtil.addHandler(elBox, "click", function(){
+                    else {
+                        EventUtil.addHandler(elBox, "click", function () {
                             var isSelected = this.getAttribute("isselected");
                             var isRedacted = this.getAttribute("isredacted");
-                            if(RectangleUtil.isClick && isSelected === 'false' && isRedacted !== 'true'){
-                                this.setAttribute("isselected",true);                                
+                            if (RectangleUtil.isClick && isSelected === 'false' && isRedacted !== 'true') {
+                                this.setAttribute("isselected", true);
                                 this.style.backgroundColor = 'red';
                             }
-                            else if(RectangleUtil.isClick && isSelected === 'true' && isRedacted !== 'true'){
-                                this.setAttribute("isselected",false);                                
+                            else if (RectangleUtil.isClick && isSelected === 'true' && isRedacted !== 'true') {
+                                this.setAttribute("isselected", false);
                                 this.style.backgroundColor = '';
                             }
                         });
@@ -326,15 +334,15 @@ var ImageRedactorEvent = function () {
         var target = EventUtil.getTarget(event);
         switch (target.id) {
             case "btnAddRectangle":
-                if(PanelUtil.allowDraw){
-                    ImageRedactorEvent.disableRedactor(); 
-                    PanelUtil.allowDraw = false;  
-                    target.value="Enable Draw";
+                if (PanelUtil.allowDraw) {
+                    ImageRedactorEvent.disableRedactor();
+                    PanelUtil.allowDraw = false;
+                    target.value = "Enable Draw";
                 }
-                else{
+                else {
                     ImageRedactorEvent.enableRedactor();
                     PanelUtil.allowDraw = true;
-                    target.value="Disable Draw";
+                    target.value = "Disable Draw";
                 }
                 break;
             case "btnRedact":
@@ -342,8 +350,8 @@ var ImageRedactorEvent = function () {
                     rectangles = [];
                 elBoxs.forEach(function (element) {
                     //无后台演示使用
-                    element.setAttribute("isselected",false);
-                    element.setAttribute("isredacted",true);
+                    element.setAttribute("isselected", false);
+                    element.setAttribute("isredacted", true);
                     element.style.backgroundColor = "black";
                     element.style.borderColor = "black";
                     element.style.opacity = 1;
@@ -353,12 +361,17 @@ var ImageRedactorEvent = function () {
                         elY = element.style.top,
                         elWidth = element.style.width,
                         elHeight = element.style.height;
-                    
+
+                    elX = parseFloat(elX.replace('px', ''));
+                    elY = parseFloat(elY.replace('px', ''));
+                    elWidth = parseFloat(elWidth.replace('px', ''));
+                    elHeight = parseFloat(elHeight.replace('px', ''));
+
                     var info = {
-                        "x": elX.substring(0, elX.length -2), 
-                        "y": elY.substring(0, elY.length -2),
-                        "w": parseInt(elWidth.substring(0, elWidth.length -2)) + 2,//border width
-                        "h": parseInt(elHeight.substring(0, elHeight.length -2)) + 2
+                        "x": elX / PanelUtil.ratio,
+                        "y": elY / PanelUtil.ratio,
+                        "w": (elWidth + 4) / PanelUtil.ratio, //border width
+                        "h": (elHeight + 4) / PanelUtil.ratio
                     }
                     rectangles.push(info);
                 });
@@ -370,14 +383,54 @@ var ImageRedactorEvent = function () {
 
             case "btnRemoveRect":
                 var elBoxs = [].slice.apply(document.getElementsByClassName("redact-box"));
-                elBoxs.forEach(function(element){
+                elBoxs.forEach(function (element) {
                     var isSelected = element.getAttribute("isselected");
-                    if(isSelected === 'true'){
+                    if (isSelected === 'true') {
                         element.parentNode.removeChild(element);
                     }
                 });
                 EventUtil.stopPropagation(event);
                 EventUtil.preventDefault(event);
+                break;
+
+            case "btnRestoreRect":
+                if (PanelUtil.ratio === 0) {
+                    PanelUtilInit();
+                }
+                var strPosition = '[{x:"", y: "", w: "", h: ""},{},{}]';
+                var position = JSON.parse(strPosition);
+                position.forEach(function (item) {
+                    var x = (item.x) * PanelUtil.ratio,
+                        y = (item.y) * PanelUtil.ratio,
+                        w = (item.w) * PanelUtil.ratio - 4,
+                        h = (item.h) * PanelUtil.ratio - 4;
+
+                    var temp_box = document.createElement("div");
+                    temp_box.className = "redact-box";
+                    temp_box.setAttribute("react_id", "rect_" + Math.random().toString().replace('.', ''));
+                    temp_box.setAttribute("isselected", false);
+                    temp_box.style.left = x + 'px';
+                    temp_box.style.top = y + 'px';
+                    temp_box.style.width = w + 'px';
+                    temp_box.style.height = h + 'px';
+                    temp_box.style.zIndex = ++RectangleUtil.zIndex;
+
+                    EventUtil.addHandler(temp_box, "click", function () {
+                        var isSelected = this.getAttribute("isselected");
+                        var isRedacted = this.getAttribute("isredacted");
+                        if (RectangleUtil.isClick && isSelected === 'false' && isRedacted !== 'true') {
+                            this.setAttribute("isselected", true);
+                            this.style.backgroundColor = 'red';
+                        }
+                        else if (RectangleUtil.isClick && isSelected === 'true' && isRedacted !== 'true') {
+                            this.setAttribute("isselected", false);
+                            this.style.backgroundColor = '';
+                        }
+                    });
+                    temp_box.innerHTML = RectangleUtil.innerHtml;
+                    document.getElementById(PanelUtil.panelID).appendChild(temp_box);
+                    temp_box = null;
+                })
                 break;
         }
     }
@@ -393,7 +446,7 @@ var ImageRedactorEvent = function () {
         disableRedactor: function () {
             EventUtil.removeHandler(document.getElementById(PanelUtil.panelID), "mousedown", handleRectEvent);
             EventUtil.removeHandler(document, "mousemove", handleRectEvent);
-            EventUtil.removeHandler(document.getElementById(PanelUtil.panelID), "mouseup", handleRectEvent);
+            EventUtil.removeHandler(document, "mouseup", handleRectEvent);
 
             document.getElementById("divCover").style.cursor = "default";
         },
@@ -401,9 +454,9 @@ var ImageRedactorEvent = function () {
         actionEventInit: function () {
             EventUtil.addHandler(document.getElementById("div-button-group"), "click", handleButtonsEvent);
 
-            EventUtil.addHandler(document, "keyup", function(event){ 
-                event = EventUtil.getEvent(event); 
-                if(event.keyCode === 46){
+            EventUtil.addHandler(document, "keyup", function (event) {
+                event = EventUtil.getEvent(event);
+                if (event.keyCode === 46) {
                     document.getElementById("btnRemoveRect").click();
                 }
             });
