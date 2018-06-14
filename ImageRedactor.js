@@ -90,7 +90,8 @@ var PanelUtil = {
     panelPageX: 0,
     panelPageY: 0,
     panelWidth: 0,
-    panelHeigth: 0
+    panelHeigth: 0,
+    allowDraw: false
 };
 
 var MousePosition = {
@@ -101,11 +102,14 @@ var MousePosition = {
 function PanelUtilInit() {
     PanelUtil.panelPageX = EventUtil.getElementPageX(document.getElementById(PanelUtil.panelID));
     PanelUtil.panelPageY = EventUtil.getElementPageY(document.getElementById(PanelUtil.panelID));
-    PanelUtil.panelWidth = document.getElementById("myImage").offsetWidth;
-    PanelUtil.panelHeigth = document.getElementById("myImage").offsetHeight;
+    // PanelUtil.panelWidth = document.getElementById("myImage").offsetWidth;
+    // PanelUtil.panelHeigth = document.getElementById("myImage").offsetHeight;
+    PanelUtil.panelWidth = document.getElementById("myImage").getBoundingClientRect().width; //精确到小数
+    PanelUtil.panelHeigth = document.getElementById("myImage").getBoundingClientRect().height;
 
     document.getElementById("divCover").style.width = PanelUtil.panelWidth + "px";
     document.getElementById("divCover").style.height = PanelUtil.panelHeigth + "px";
+    document.getElementById("divCover").style.cursor = "crosshair";
 }
 
 var ImageRedactorEvent = function () {
@@ -145,9 +149,9 @@ var ImageRedactorEvent = function () {
                 }
                 else if (targetClassName != 'redact-box') {
                     //create rectangle
-                    console.log("mousedown: create rectangle")
                     RectangleUtil.rectWNX = event.pageX - PanelUtil.panelPageX;
-                    RectangleUtil.rectWNY = event.pageY - PanelUtil.panelPageY;
+                    RectangleUtil.rectWNY = event.pageY - PanelUtil.panelPageY;                    
+                    console.log("mousedown: create rectangle. RectangleUtil.rectWNX ："+  RectangleUtil.rectWNX + "RectangleUtil.rectWNY ："+ RectangleUtil.rectWNY)
                     var active_box = document.createElement("div");
                     active_box.id = "active_box";
                     active_box.className = "redact-box";
@@ -321,6 +325,18 @@ var ImageRedactorEvent = function () {
         event = EventUtil.getEvent(event);
         var target = EventUtil.getTarget(event);
         switch (target.id) {
+            case "btnAddRectangle":
+                if(PanelUtil.allowDraw){
+                    ImageRedactorEvent.disableRedactor(); 
+                    PanelUtil.allowDraw = false;  
+                    target.value="Enable Draw";
+                }
+                else{
+                    ImageRedactorEvent.enableRedactor();
+                    PanelUtil.allowDraw = true;
+                    target.value="Disable Draw";
+                }
+                break;
             case "btnRedact":
                 var elBoxs = [].slice.apply(document.getElementsByClassName("redact-box")),
                     rectangles = [];
@@ -368,7 +384,7 @@ var ImageRedactorEvent = function () {
 
     return {
         enableRedactor: function () {
-            EventUtil.addHandler(window, "load", PanelUtilInit);//图片加载完成
+            PanelUtilInit();
             EventUtil.addHandler(document.getElementById(PanelUtil.panelID), "mousedown", handleRectEvent);
             EventUtil.addHandler(document, "mousemove", handleRectEvent);
             EventUtil.addHandler(document, "mouseup", handleRectEvent);
@@ -378,6 +394,8 @@ var ImageRedactorEvent = function () {
             EventUtil.removeHandler(document.getElementById(PanelUtil.panelID), "mousedown", handleRectEvent);
             EventUtil.removeHandler(document, "mousemove", handleRectEvent);
             EventUtil.removeHandler(document.getElementById(PanelUtil.panelID), "mouseup", handleRectEvent);
+
+            document.getElementById("divCover").style.cursor = "default";
         },
 
         actionEventInit: function () {

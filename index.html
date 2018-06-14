@@ -45,7 +45,6 @@
             -moz-user-select: none;     /* Firefox all */  
             -ms-user-select: none;      /* IE 10+ */  
             user-select: none;  
-            cursor: crosshair;
             background-image: url(#);  /* IE 10  image 图层问题 */  
         }
 
@@ -55,7 +54,7 @@
             height: 0px;
             position: absolute;
             opacity: 0.5;
-            cursor: move;
+            cursor: move;            
         }
 
         .ui-resizable-handle {
@@ -106,8 +105,9 @@
 <body>
     <div id="page">
         <div id="div-button-group">
+            <input type="button" value="Enable Draw" id="btnAddRectangle" style="width:100px">
             <input type="button" value="Redact" id="btnRedact" style="width:100px">
-            <input type="button" value="Remove Redact" id="btnRemoveRect" style="width: 100px">
+            <input type="button" value="Remove Redact" id="btnRemoveRect" style="width: 120px">
         </div>
         <div>
             <ul>
@@ -133,8 +133,6 @@
 </body>
 <script type="text/javascript" src="ImageRedactor.js"></script>
 <script>
-    ImageRedactorEvent.enableRedactor();
-    //ImageRedactorEvent.disableRedactor();   
     ImageRedactorEvent.actionEventInit();
 </script>
 </html>
